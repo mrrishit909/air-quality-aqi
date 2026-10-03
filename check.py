@@ -39,11 +39,15 @@ def table(name):
     return list(csv.DictReader(open(R / f"{name}.csv")))
 
 
+spaces = [0]
+
+
 def rows(year):
     z = zipfile.ZipFile(HERE / "data" / f"daily_aqi_by_county_{year}.zip")
     r = csv.reader(io.TextIOWrapper(z.open(z.namelist()[0]), encoding="utf-8", newline=""))
     assert next(r) == ["State Name", "county Name", "State Code", "County Code", "Date", "AQI", "Category", "Defining Parameter", "Defining Site", "Number of Sites Reporting"]
     for state, county, sc, cc, date, aqi, cat, param, site, ns in r:
+        spaces[0] += state != state.strip() or county != county.strip(); state, county = state.strip(), county.strip()
         yield state, county, sc + cc, date, int(aqi), cat, param, int(ns)
 
 
@@ -77,6 +81,7 @@ def main():
     panel = {f for f in all_counties if all(county_year[(f, y)] >= MIN_DAYS for y in YEARS)}
     a = {r["check"]: float(r["value"]) for r in table("audit")}
     eq("county-days", total, int(a["county-days, 2015 to 2025"])); eq("duplicates", dups, 0); eq("category mismatches", mismatch, int(a["rows whose category disagrees with their AQI"]))
+    eq("stray spaces", spaces[0], int(a["county-days whose state or county name had stray spaces (trimmed)"]))
     eq("beyond 500", beyond, int(a["county-days with AQI above 500"])); eq("beyond PM10", beyond_pm10, int(a["  of them set by PM10"])); eq("beyond PM2.5", beyond_pm25, int(a["  of them set by PM2.5"]))
     top5 = sorted(high_rows)[:5]
     for r, t in zip(table("extremes"), top5):

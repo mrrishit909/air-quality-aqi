@@ -26,6 +26,7 @@ def load():
         z = zipfile.ZipFile(HERE / "data" / f"daily_aqi_by_county_{y}.zip"); frames.append(pd.read_csv(z.open(z.namelist()[0]), dtype={"State Code": str, "County Code": str}))
     d = pd.concat(frames, ignore_index=True)
     d.columns = ["state", "county", "scode", "ccode", "date", "aqi", "category", "param", "site", "nsites"]
+    d["spaces"] = (d["state"] != d["state"].str.strip()) | (d["county"] != d["county"].str.strip()); d["state"] = d["state"].str.strip(); d["county"] = d["county"].str.strip()
     d["fips"] = d["scode"] + d["ccode"]; d["date"] = pd.to_datetime(d["date"]); d["year"] = d["date"].dt.year; d["month"] = d["date"].dt.month
     d["group"] = d["param"].map({"Ozone": "ozone", "PM2.5": "pm25"}).fillna("other")
     return d
@@ -40,7 +41,7 @@ def main():
     # Step 2: audit
     mismatch = sum(int(((d["category"] == c) & ((d["aqi"] < lo) | (d["aqi"] > hi))).sum()) for c, (lo, hi) in BANDS.items()); beyond = d[d["aqi"] > 500]
     audit = [("county-days, 2015 to 2025", len(d)), ("duplicate county-days", int(d.duplicated(["fips", "date"]).sum())), ("rows whose category disagrees with their AQI", mismatch),
-             ("county-days with AQI above 500", len(beyond)), ("  of them set by PM10", int((beyond["param"] == "PM10").sum())), ("  of them set by PM2.5", int((beyond["param"] == "PM2.5").sum())),
+             ("county-days whose state or county name had stray spaces (trimmed)", int(d["spaces"].sum())), ("county-days with AQI above 500", len(beyond)), ("  of them set by PM10", int((beyond["param"] == "PM10").sum())), ("  of them set by PM2.5", int((beyond["param"] == "PM2.5").sum())),
              ("highest AQI", int(d["aqi"].max())), ("counties with data in any year", d["fips"].nunique()),
              (f"panel counties (at least {MIN_DAYS} days in every year)", len(panel)), ("panel share of all county-days (%)", 100 * len(p) / len(d)), ("states and DC in the panel", p["state"].nunique())]
     pd.DataFrame(audit, columns=["check", "value"]).to_csv(R / "audit.csv", index=False)

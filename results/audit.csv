@@ -2,6 +2,7 @@ check,value
 "county-days, 2015 to 2025",3577372.0
 duplicate county-days,0.0
 rows whose category disagrees with their AQI,0.0
+county-days whose state or county name had stray spaces (trimmed),23770.0
 county-days with AQI above 500,323.0
   of them set by PM10,178.0
   of them set by PM2.5,145.0
