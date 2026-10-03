@@ -1,0 +1,71 @@
+{
+  "pulled": "2026-10-03",
+  "files": {
+    "daily_aqi_by_county_2015.zip": {
+      "url": "https://aqs.epa.gov/aqsweb/airdata/daily_aqi_by_county_2015.zip",
+      "bytes": 1617227,
+      "rows": 320535,
+      "sha256": "d10bb88422db1f8a2d97fc13bc097cd75a4b5b43e06cd86680dba6d65125ad28"
+    },
+    "daily_aqi_by_county_2016.zip": {
+      "url": "https://aqs.epa.gov/aqsweb/airdata/daily_aqi_by_county_2016.zip",
+      "bytes": 1607710,
+      "rows": 321071,
+      "sha256": "b9aeb394edd6ca02e8ca18894002d3c0b32e0bfffc616bc8744734a35741243c"
+    },
+    "daily_aqi_by_county_2017.zip": {
+      "url": "https://aqs.epa.gov/aqsweb/airdata/daily_aqi_by_county_2017.zip",
+      "bytes": 1633214,
+      "rows": 326801,
+      "sha256": "a00d588c76aa0fe4731ad7d6f7833fc542b2474c0bcf5ff7b22298ee13608b6a"
+    },
+    "daily_aqi_by_county_2018.zip": {
+      "url": "https://aqs.epa.gov/aqsweb/airdata/daily_aqi_by_county_2018.zip",
+      "bytes": 1635295,
+      "rows": 327541,
+      "sha256": "7419c69dafe10ea0c34bf73469bf3b2f28d6d2100484c9fa95df265c7bd35cb1"
+    },
+    "daily_aqi_by_county_2019.zip": {
+      "url": "https://aqs.epa.gov/aqsweb/airdata/daily_aqi_by_county_2019.zip",
+      "bytes": 1611725,
+      "rows": 326044,
+      "sha256": "6b6d1e71885afb701cc899898b03fe522ff6f0cfaf9ba515e77a1b9975b768d7"
+    },
+    "daily_aqi_by_county_2020.zip": {
+      "url": "https://aqs.epa.gov/aqsweb/airdata/daily_aqi_by_county_2020.zip",
+      "bytes": 1603615,
+      "rows": 325136,
+      "sha256": "cdf25ce5930c39f5947f2788682831f2c044d83644b0df1f44bab975cf986e0d"
+    },
+    "daily_aqi_by_county_2021.zip": {
+      "url": "https://aqs.epa.gov/aqsweb/airdata/daily_aqi_by_county_2021.zip",
+      "bytes": 1626034,
+      "rows": 326536,
+      "sha256": "ced8701925099147473b3885762a04a67444b4cf9bd229d1f6cbf4d252a90228"
+    },
+    "daily_aqi_by_county_2022.zip": {
+      "url": "https://aqs.epa.gov/aqsweb/airdata/daily_aqi_by_county_2022.zip",
+      "bytes": 1604064,
+      "rows": 324751,
+      "sha256": "1b4cef0e232587bf27014f8fa97ebe5dfc6a3167811f4c2c9b759324ca6b97bc"
+    },
+    "daily_aqi_by_county_2023.zip": {
+      "url": "https://aqs.epa.gov/aqsweb/airdata/daily_aqi_by_county_2023.zip",
+      "bytes": 1620727,
+      "rows": 325707,
+      "sha256": "2320c7ac34e8bcbdc8ed5c175ae462aa0e9f9551473962af0922c27afe2d37a5"
+    },
+    "daily_aqi_by_county_2024.zip": {
+      "url": "https://aqs.epa.gov/aqsweb/airdata/daily_aqi_by_county_2024.zip",
+      "bytes": 1625395,
+      "rows": 329597,
+      "sha256": "4a3dfac4ec0880dd794b139fd7b8ab142b38b9cde0346e708aad37f9cc95dbdc"
+    },
+    "daily_aqi_by_county_2025.zip": {
+      "url": "https://aqs.epa.gov/aqsweb/airdata/daily_aqi_by_county_2025.zip",
+      "bytes": 1593335,
+      "rows": 323653,
+      "sha256": "d638020444292b4095ccdcc7c56eed92c09f9b88dcae425677996e5966b25b37"
+    }
+  }
+}
