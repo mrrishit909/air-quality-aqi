@@ -1,0 +1,12 @@
+check,value
+"county-days, 2015 to 2025",3577372.0
+duplicate county-days,0.0
+rows whose category disagrees with their AQI,0.0
+county-days with AQI above 500,323.0
+  of them set by PM10,178.0
+  of them set by PM2.5,145.0
+highest AQI,8368.0
+counties with data in any year,1107.0
+panel counties (at least 300 days in every year),609.0
+panel share of all county-days (%),67.74039714069434
+states and DC in the panel,51.0

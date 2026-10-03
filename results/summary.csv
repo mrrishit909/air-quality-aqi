@@ -1,0 +1,15 @@
+key,value
+panel_county_days,2423326.0
+bad_total,38652.0
+bad_pct,1.594998
+ozone_share_of_bad_pct,58.757632
+pm25_share_of_bad_pct,35.589361
+other_share_of_bad_pct,5.653006
+over_150_total,8856.0
+pm25_share_of_over_150_pct,57.204155
+ozone_share_of_over_150_pct,34.044715
+june_to_august_share_of_bad_pct,55.99969
+spearman_year_vs_bad_pct,-0.090909
+spearman_p,0.790373
+panel_counties_with_no_bad_day,5.0
+worst_day_counties_over_150,113.0
