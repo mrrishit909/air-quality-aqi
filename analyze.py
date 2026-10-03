@@ -1,7 +1,7 @@
 """Steps 2-4: audit the files, then ask how bad the air is, when, where and what sets the bad days.
 
     ./venv/bin/python analyze.py
-        -> results/audit.csv  audit_years.csv  categories.csv  by_year.csv  by_month.csv  counties.csv  concentration.csv  sites.csv  worst_days.csv  summary.csv
+        -> results/audit.csv  audit_years.csv  categories.csv  by_year.csv  by_month.csv  counties.csv  concentration.csv  sites.csv  worst_days.csv  daily.csv  summary.csv
 
 Data: EPA AirData daily AQI by county, 2015 to 2025: one row per county per day on which a monitor reported. A county's AQI is the highest of its monitors and pollutants.
 A "bad" day is AQI above 100 (unhealthy for sensitive groups or worse). The analysis uses a fixed panel: counties with at least 300 daily values in every year from 2015 to 2025, so
@@ -71,6 +71,7 @@ def main():
     p["sites_group"] = pd.cut(p["nsites"], [0, 1, 2, 3, 5, 10 ** 6], labels=["1", "2", "3", "4-5", "6+"])
     sg = p.groupby("sites_group", observed=True).agg(county_days=("aqi", "size"), bad=("bad", "sum")).reset_index(); sg["bad_pct"] = 100 * sg["bad"] / sg["county_days"]; sg.round(6).to_csv(R / "sites.csv", index=False)
     day = p.groupby("date").agg(reporting=("aqi", "size"), over_100=("bad", "sum")); day["over_150"] = p[p["aqi"] > 150].groupby("date").size(); day["over_150"] = day["over_150"].fillna(0).astype(int)
+    dd = day.reset_index(); dd["date"] = dd["date"].dt.strftime("%Y-%m-%d"); dd.to_csv(R / "daily.csv", index=False)
     top = day.sort_values(["over_150", "over_100"], ascending=[False, False]).head(10).reset_index(); states, pm = [], []
     for dt in top["date"]:
         w = p[(p["date"] == dt) & (p["aqi"] > 150)]; s = w.groupby("state").size().reset_index(name="n").sort_values(["n", "state"], ascending=[False, True]).head(3)
