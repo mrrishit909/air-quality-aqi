@@ -5,7 +5,9 @@ pollutant that set them), the summary figures and a Spearman correlation of year
     ./venv/bin/python check.py          (run download.py first: the zips are not committed)
 """
 import csv
+import datetime
 import io
+import json
 import math
 import zipfile
 from collections import Counter, defaultdict
@@ -45,6 +47,13 @@ def rows(year):
         yield state, county, sc + cc, date, int(aqi), cat, param, int(ns)
 
 
+def format_b36(n):
+    out = ""
+    while n:
+        n, r = divmod(n, 36); out = "0123456789abcdefghijklmnopqrstuvwxyz"[r] + out
+    return out.rjust(2, "0")
+
+
 def group(param):
     return "ozone" if param == "Ozone" else "pm25" if param == "PM2.5" else "other"
 
@@ -52,7 +61,7 @@ def group(param):
 def main():
     # pass 1: the audit and the panel
     per_year_rows, per_year_counties, county_year, all_counties = {}, {}, Counter(), set()
-    total = dups = mismatch = beyond = beyond_pm10 = beyond_pm25 = 0; highest = 0
+    total = dups = mismatch = beyond = beyond_pm10 = beyond_pm25 = 0; highest = 0; high_rows = []
     for y in YEARS:
         seen, cs, n = set(), set(), 0
         for state, county, fips, date, aqi, cat, param, ns in rows(y):
@@ -62,11 +71,17 @@ def main():
             if aqi > 500:
                 beyond += 1; beyond_pm10 += param == "PM10"; beyond_pm25 += param == "PM2.5"
             highest = max(highest, aqi); assert date.startswith(str(y))
+            if aqi > 2000:
+                high_rows.append((-aqi, fips, date, state, county, param))
         per_year_rows[y], per_year_counties[y] = n, len(cs); total += n; all_counties |= cs
     panel = {f for f in all_counties if all(county_year[(f, y)] >= MIN_DAYS for y in YEARS)}
     a = {r["check"]: float(r["value"]) for r in table("audit")}
     eq("county-days", total, int(a["county-days, 2015 to 2025"])); eq("duplicates", dups, 0); eq("category mismatches", mismatch, int(a["rows whose category disagrees with their AQI"]))
     eq("beyond 500", beyond, int(a["county-days with AQI above 500"])); eq("beyond PM10", beyond_pm10, int(a["  of them set by PM10"])); eq("beyond PM2.5", beyond_pm25, int(a["  of them set by PM2.5"]))
+    top5 = sorted(high_rows)[:5]
+    for r, t in zip(table("extremes"), top5):
+        eq("extreme", (r["state"], r["county"], r["fips"].zfill(5), r["date"], int(r["aqi"]), r["param"]), (t[3], t[4], t[1], t[2], -t[0], t[5]))
+    eq("extremes listed", len(table("extremes")), 5)
     eq("highest", highest, int(a["highest AQI"])); eq("counties any year", len(all_counties), int(a["counties with data in any year"])); eq("panel", len(panel), int(a[f"panel counties (at least {MIN_DAYS} days in every year)"]))
 
     # pass 2: the panel
@@ -116,6 +131,19 @@ def main():
     daily = table("daily"); eq("days in the daily table", len(daily), len(day)); eq("days sorted", [r["date"] for r in daily], sorted(day))
     for r in daily:
         d = r["date"]; eq(f"daily {d} reporting", day[d]["reporting"], int(r["reporting"])); eq("over_100", day[d]["over_100"], int(r["over_100"])); eq("over_150", day[d]["over_150"], int(r["over_150"]))
+
+    # the explorer's data: every day of the 24 counties, decoded and compared with the raw rows
+    ex = json.load(open(HERE / "explorer" / "data.json")); want = {c["id"] for c in ex["counties"]}; raw_recs = {f: {} for f in want}; letter = {"Ozone": "O", "PM2.5": "P", "PM10": "M", "NO2": "N", "CO": "C"}
+    eq("explorer years", ex["years"], list(YEARS)); eq("explorer counties", len(want), 24); assert want <= panel
+    for y in YEARS:
+        for state, county, fips, date, aqi, cat, param, ns in rows(y):
+            if fips in want:
+                raw_recs[fips][date] = (min(aqi, ex["cap"]), letter[param])
+    for c in ex["counties"]:
+        for y in YEARS:
+            s, d0 = c["d"][str(y)], datetime.date(y, 1, 1); n = (datetime.date(y + 1, 1, 1) - d0).days; eq(f"explorer {c['id']} {y} length", len(s), 3 * n)
+            for k in range(n):
+                rec = raw_recs[c["id"]].get((d0 + datetime.timedelta(days=k)).isoformat()); got = s[3 * k:3 * k + 3]; eq(f"explorer {c['id']} {y} day {k}", got, "zz-" if rec is None else format_b36(rec[0]) + rec[1])
 
     # the summary, with a Spearman correlation written out by hand
     sm = {r["key"]: float(r["value"]) for r in table("summary")}

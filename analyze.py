@@ -1,7 +1,7 @@
 """Steps 2-4: audit the files, then ask how bad the air is, when, where and what sets the bad days.
 
     ./venv/bin/python analyze.py
-        -> results/audit.csv  audit_years.csv  categories.csv  by_year.csv  by_month.csv  counties.csv  concentration.csv  sites.csv  worst_days.csv  daily.csv  summary.csv
+        -> results/audit.csv  extremes.csv  audit_years.csv  categories.csv  by_year.csv  by_month.csv  counties.csv  concentration.csv  sites.csv  worst_days.csv  daily.csv  summary.csv
 
 Data: EPA AirData daily AQI by county, 2015 to 2025: one row per county per day on which a monitor reported. A county's AQI is the highest of its monitors and pollutants.
 A "bad" day is AQI above 100 (unhealthy for sensitive groups or worse). The analysis uses a fixed panel: counties with at least 300 daily values in every year from 2015 to 2025, so
@@ -44,6 +44,7 @@ def main():
              ("highest AQI", int(d["aqi"].max())), ("counties with data in any year", d["fips"].nunique()),
              (f"panel counties (at least {MIN_DAYS} days in every year)", len(panel)), ("panel share of all county-days (%)", 100 * len(p) / len(d)), ("states and DC in the panel", p["state"].nunique())]
     pd.DataFrame(audit, columns=["check", "value"]).to_csv(R / "audit.csv", index=False)
+    ex = d.sort_values(["aqi", "fips", "date"], ascending=[False, True, True]).head(5)[["state", "county", "fips", "date", "aqi", "param"]].copy(); ex["date"] = ex["date"].dt.strftime("%Y-%m-%d"); ex.to_csv(R / "extremes.csv", index=False)
     ay = d.groupby("year").agg(county_days=("aqi", "size"), counties=("fips", "nunique")).reset_index(); ay["panel_county_days"] = p.groupby("year").size().to_numpy(); ay.to_csv(R / "audit_years.csv", index=False)
 
     # Step 3: how bad, by year, by month

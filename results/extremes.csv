@@ -1,0 +1,6 @@
+state,county,fips,date,aqi,param
+California,Mono,06051,2022-06-12,8368,PM10
+California,Mono,06051,2022-05-06,7835,PM10
+California,Mono,06051,2016-10-15,7063,PM10
+California,Mono,06051,2015-04-05,4384,PM10
+California,Mono,06051,2016-05-19,4335,PM10
